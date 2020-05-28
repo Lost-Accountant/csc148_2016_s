@@ -1,2 +1,0 @@
-feed_publisher_name,feed_publisher_url,feed_lang
-Mikołaj Kuranowski (via TokyoGTFS); Data provded by Open Data Challenge for Public Transportation in Tokyo,https://github.com/MKuranowski/TokyoGTFS,ja
