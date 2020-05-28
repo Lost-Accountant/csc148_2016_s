@@ -134,15 +134,20 @@ def insert(node, data):
     <BLANKLINE>
     """
     return_node = node
+    # empty current node
     if not node:
         return_node = BinaryTree(data)
+    # smaller
     elif data < node.data:
         node.left = insert(node.left, data)
+    # bigger
     elif data > node.data:
         node.right = insert(node.right, data)
-    else:  # nothing to do
+    # same value
+    else:
         pass
     return return_node
+
 
 def preorder_visit(t, act):
     """
@@ -244,7 +249,7 @@ def inorder_visit(root, act):
 def visit_level(t, n, act):
     """
     Visit each node of BinaryTree t at level n and act on it.  Return
-    the number of nodes visited visited.
+    the number of nodes visited.
 
     :param t: binary tree to visit
     :type t: BinaryTree|None
@@ -269,6 +274,7 @@ def visit_level(t, n, act):
     14
     4
     """
+    count = 0
     if t is None:
         # num of elements
         return 0
@@ -279,7 +285,11 @@ def visit_level(t, n, act):
         return 1
 
     elif n > 0:
-        pass
+        count += visit_level(t.left, n-1, act)
+        count += visit_level(t.right, n-1, act)
+        return count
+    else:
+        return 0
 
 
 def levelorder_visit(t, act):
@@ -310,7 +320,10 @@ def levelorder_visit(t, act):
     14
     """
     # this approach uses iterative deepening
-    pass
+    visited, n = visit_level(t, 0, act), 0
+    while visited > 0:
+        n += 1
+        visited = visit_level(t, n, act)
 
 
 # assume binary search tree order property
@@ -332,6 +345,7 @@ def bst_contains(node, value):
     True
     """
     if node is None:
+        # not found
         return False
     elif value < node.data:
         return bst_contains(node.left, value)
@@ -339,9 +353,6 @@ def bst_contains(node, value):
         return bst_contains(node.right, value)
     else:
         return True
-
-
-
 
 if __name__ == "__main__":
     import doctest
