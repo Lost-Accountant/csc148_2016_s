@@ -1,0 +1,2 @@
+Total profit: $18.990000000000002 
+Customer served: 2

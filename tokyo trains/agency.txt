@@ -1,0 +1,6 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang
+TokyoMetro,東京メトロ,https://www.tokyometro.jp/,Asia/Tokyo,ja
+Toei,東京都交通局,https://www.kotsu.metro.tokyo.jp/,Asia/Tokyo,ja
+JR-East,JR-東日本,https://www.jreast.co.jp/,Asia/Tokyo,ja
+Keio,京王電鉄,https://www.keio.co.jp/,Asia/Tokyo,ja
+TWR,東京臨海高速鉄道,http://www.twr.co.jp/,Asia/Tokyo,ja

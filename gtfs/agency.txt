@@ -1,0 +1,10 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang
+Toei,東京都交通局,https://www.kotsu.metro.tokyo.jp/,Asia/Tokyo,ja
+KeioBus,京王バス,https://www.keio-bus.com/,Asia/Tokyo,ja
+KokusaiKogyoBus,国際興業バス,https://5931bus.com/,Asia/Tokyo,ja
+OdakyuBus,小田急バス,http://www.odakyubus.co.jp/,Asia/Tokyo,ja
+SeibuBus,西武バス,http://www.seibubus.co.jp/,Asia/Tokyo,ja
+TobuBus,東武バス,http://www.tobu-bus.com,Asia/Tokyo,ja
+TokyuBus,東急バス,https://www.tokyubus.co.jp/,Asia/Tokyo,ja
+NishiTokyoBus,西東京バス,http://www.nisitokyobus.co.jp/,Asia/Tokyo,ja
+KantoBus,関東バス,https://www.kanto-bus.co.jp/,Asia/Tokyo,ja

@@ -1,0 +1,29 @@
+```{r load library, message=FALSE}
+library(bpa)
+library(tidyverse)
+library(kableExtra)
+library(knitr)
+library(leaflet)
+```
+
+```{r load gtfs}
+agency = read_csv('agency.txt', trim_ws = TRUE)
+stops = read.csv('stops.txt', encoding="UTF-8")
+kable(head(stops))
+```
+
+
+```{r visualization}
+# visualize the stops
+m = leaflet() %>%
+  # Add CartoDB background map
+  addProviderTiles("CartoDB.DarkMatter") %>%  
+  # Add a marker for each stop
+  addCircleMarkers(lng= ~ stop_lon, lat= ~stop_lat, 
+                   data = head(stops,100), stroke = FALSE, 
+                   fillOpacity = 0.5, radius =5 ) 
+m  # Show the map
+
+
+
+```

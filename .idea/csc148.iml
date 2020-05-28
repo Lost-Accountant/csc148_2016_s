@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab10" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab3" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab5" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab6" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab7" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab8" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab9" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/exercises/ex1" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/exercises/ex2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/exercises/ex3" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/exercises/ex4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/exercises/ex5" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Assignments/a1" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Assignments/a2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Labs/lab1" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib/design_recipe" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Misc" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week1" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week10" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week11" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week12" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week3" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week5" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week6" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week7" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week8" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lectures/week9" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.7 (venv)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
+  </component>
+  <component name="PyDocumentationSettings">
+    <option name="myDocStringFormat" value="Epytext" />
+  </component>
+</module>
