@@ -115,8 +115,17 @@ def parenthesize(b):
     >>> print(parenthesize(b5))
     ((3.0 * 4.0) + 7.0)
     """
-    pass
-
+    # when no 2 children
+    # base case
+    if not b.left or not b.right:
+        return b.data
+    # when has children
+    else:
+        #  recursion
+        # general case
+        return "({} {} {})".format(parenthesize(b.left),
+                                   b.data,
+                                   parenthesize(b.right))
 
 def list_longest_path(node):
     """
@@ -136,7 +145,20 @@ def list_longest_path(node):
     >>> list_longest_path(b3)
     [5, 3, 2]
     """
-    pass
+    l = []
+    # base case 1: no nodes:
+    if not node:
+        return l
+    # base case 2: no further nodes
+    if node.left is None and node.right is None:
+        return l + [node.data]
+
+    # general case: recursion
+    else:
+        if len(list_longest_path(node.left)) < len(list_longest_path(node.right)):
+            return l + [node.data] + list_longest_path(node.right)
+        else:
+            return l + [node.data] + list_longest_path(node.left)
 
 
 def insert(node, data):
