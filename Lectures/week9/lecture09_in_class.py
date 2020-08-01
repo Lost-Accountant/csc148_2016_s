@@ -98,7 +98,7 @@ def bst_contains(node, value):
         else:
             return bst_contains(node.right, value)
 
-def insert(node, data):
+def bst_insert(node, data):
     """
     Insert data in BST rooted at node if necessary, and return new root.
 
@@ -131,7 +131,7 @@ def insert(node, data):
             insert(node.right, data)
     return return_node
 
-def delete(node, data):
+def bst_delete(node, data):
     """
     Delete data in BST rooted at node if necessary, and return new root.
 
@@ -142,6 +142,16 @@ def delete(node, data):
     @param data: an object to be deleted
     @type data: object
     @rtype: bool
+
+    >>> b = BinaryTree(5)
+    >>> b1 = bst_insert(b, 3)
+    >>> b2 = bst_insert(b1, 8)
+    >>> bst_delete(b2, 3)
+    True
+    >>> print(b2)
+        8
+    5
+    <BLANKLINE>
     """
     # locate node to be deleted and its parent
     parent, current = None, node
@@ -194,3 +204,72 @@ def delete(node, data):
         else:
             parent_right_most.right = right_most.left
     return True # successfully delete a node
+
+def BST_delete_alt(node, data):
+    """
+    Delete data in BST rooted at node if necessary, and return new root.
+
+    Assume node is the root of a Binary Search Tree.
+
+    @param node: a Binary Search Tree
+    @type node: BinaryTree
+    @param data: an object to be deleted
+    @type data: object
+    @rtype: bool
+
+    >>> b = BinaryTree(5)
+    >>> b1 = bst_insert(b, 3)
+    >>> b2 = bst_insert(b1, 8)
+    >>> bst_delete(b2, 3)
+    True
+    >>> print(b2)
+        8
+    5
+    <BLANKLINE>
+    """
+    # locate the node to be deleted and its parent node
+    parent, current = None, node
+    # find node that matches value
+    while current is not None and data != current.data:
+        # which way to search
+        if data < current.data:
+            parent = current
+            current = current.left
+        elif data > current.data:
+            parent = current
+            current = current.right
+        else:
+            pass
+    # might reach empty node
+    if current is None:
+        return False
+
+    # Situation 1: no right child
+    if current.right is None:
+        # parent is none
+        if parent is None:
+            current = current.left
+        # parent not none
+        else:
+            # which side is left subtree attached to parent node
+            if data < parent.data:
+                parent.left = current.left
+            else:
+                parent.right = current.right
+    # Situation 2: has right child
+    else:
+        # 1) Locate left most and its parent
+        left_most, parent_left_most = current.right, current
+        while left_most.left is not None:
+            parent_left_most = left_most
+            left_most = left_most.left
+        # 2) copy left most value to current
+        current.data = left_most.data
+        # 3) link parent to right child of left most
+        # Special case: if parent of left most is current,
+        # left most is at right side, but normally left side
+        if parent_left_most.left != left_most:
+            parent_left_most.right = left_most.right
+        else:
+            parent_left_most.left = left_most.right
+        return True
