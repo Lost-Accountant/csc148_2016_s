@@ -130,3 +130,67 @@ def insert(node, data):
         else:
             insert(node.right, data)
     return return_node
+
+def delete(node, data):
+    """
+    Delete data in BST rooted at node if necessary, and return new root.
+
+    Assume node is the root of a Binary Search Tree.
+
+    @param node: a Binary Search Tree
+    @type node: BinaryTree
+    @param data: an object to be deleted
+    @type data: object
+    @rtype: bool
+    """
+    # locate node to be deleted and its parent
+    parent, current = None, node
+    # search node to be deleted
+    while current is not None and current.data != data:
+        # search left
+        if data < current.data:
+            parent = current
+            current = current.left
+        elif data > current.data:
+            parent = current
+            current = current.right
+        else: # found equal value
+            pass
+    # end of loop, either found it or reach none
+    if current is None:
+        return False
+
+    # Situation 1: No left child
+    if current.left is None:
+        # connect parent to current's right subtree
+        # situation a): parent is None, current is root node
+        if parent is None:
+            current = current.right
+        else: # situation b): has not-none parent
+            # which side is current on for parent's subtree
+            # help locate location of current's right subtree for parent
+            if data < parent.data:
+                # left side
+                parent.left = current.right
+            else:
+                # right side
+                parent.right = current.right
+    # Situation 2: Has left child
+    else:
+        # additional locator for right most and its parent
+        right_most, parent_right_most = current.left, current
+        # locating process
+        while right_most.right is not None: # not reach empty right yet
+            parent_right_most = right_most
+            right_most = right_most.right
+        # replacing process
+        # 1) copy value of right most to current
+        current.data = right_most.data
+        # 2) eliminate right most
+        # situation a): parent of right most is current (right most left side)
+        if parent_right_most.right != right_most:
+            parent_right_most.left = right_most.left
+        # situation b): parent of right most is not current (right most right side)
+        else:
+            parent_right_most.right = right_most.left
+    return True # successfully delete a node
