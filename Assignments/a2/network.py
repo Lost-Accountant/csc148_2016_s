@@ -89,10 +89,10 @@ class Network(object):
         """
         open_file = open(log_file_name, 'r')
         for line in open_file:
-            info = line.split('#')
+            info = line.rstrip('\n').split('#')
             if len(info) == 2: # boss slot, no parent
                 self.name = info[0]
-                self.asset = info[1]
+                self.asset = int(info[1])
             else:
                 # has parent
                 # parent already in
@@ -105,7 +105,8 @@ class Network(object):
                             if each.__contains__(info[1]):
                                 current = each
                                 # create child from parent
-                    current.child.append(Network(name=info[0],asset=info[1]))
+                    current.child.append(Network(name=info[0],
+                                                 asset=int(info[2])))
 
         open_file.close()
 
