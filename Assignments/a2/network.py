@@ -1,3 +1,5 @@
+from _collections import deque
+
 class Network(object):
     """A pyramid network.
 
@@ -72,6 +74,106 @@ class Network(object):
         else:
             return self.name == name or any([name in each for each in self.child])
     # TODO: Complete this part
+
+    def bfs_contains(self, name):
+        """
+        Return whether Network self contains name with Breadth-first search,
+        using Queue (FIFO)
+
+        @param name: a certain name to search for
+        @type name: str
+        @rtype: bool
+
+        >>> n1 = Network("John", 100)
+        >>> n1.bfs_contains('John')
+        True
+        >>> n2 = Network("Smith", 150, [n1])
+        >>> n2.bfs_contains('John')
+        True
+        >>> n2.bfs_contains('Charles')
+        False
+        """
+        queue = deque()
+        if self.name == name:
+            return True
+        queue.append(self)
+        while len(queue) != 0:
+            extract = queue.popleft()
+            if extract.name == name:
+                return True
+            for child in extract.child:
+                if child.name == name:
+                    return True
+                queue.append(child)
+        # go through everything and still not found
+        return False
+
+    def dfs_contains(self, name):
+        """
+        Return whether Network self contains name with Depth-first search,
+        using Stack (LIFO) which is just a list
+
+        @param name: a certain name to search for
+        @type name: str
+        @rtype: bool
+
+        >>> n1 = Network("John", 100)
+        >>> n1.dfs_contains('John')
+        True
+        >>> n2 = Network("Smith", 150, [n1])
+        >>> n2.dfs_contains('John')
+        True
+        >>> n2.dfs_contains('Charles')
+        False
+        >>> n3 = Network('Arthur', 20)
+        >>> n4 = Network('Bob', 200, [n2, n3])
+        >>> n4.dfs_contains('John')
+        True
+        >>> n4.dfs_contains('Charles')
+        False
+        """
+        if self.name == name:
+            return True
+        for child in self.child:
+            return child.dfs_contains(name)
+        # goes through everything
+        return False
+        # feels very similar to the tree search function taught.
+
+    def dfs_contains_iter(self, name):
+        """
+        Return whether Network self contains name with Depth-first search,
+        using Stack (LIFO) which is just a list, with iterative methods.
+
+        @param name: a certain name to search for
+        @type name: str
+        @rtype: bool
+
+        >>> n1 = Network("John", 100)
+        >>> n1.dfs_contains_iter('John')
+        True
+        >>> n2 = Network("Smith", 150, [n1])
+        >>> n2.dfs_contains_iter('John')
+        True
+        >>> n2.dfs_contains_iter('Charles')
+        False
+        >>> n3 = Network('Arthur', 20)
+        >>> n4 = Network('Bob', 200, [n2, n3])
+        >>> n4.dfs_contains_iter('John')
+        True
+        >>> n4.dfs_contains_iter('Charles')
+        False
+        """
+        stack = []
+        stack.append(self)
+        while len(stack) != 0:
+            extract = stack.pop()
+            if extract.name == name:
+                return True
+            for child in extract.child:
+                stack.append(child)
+        # goes through everything
+        return False
 
     def load_log(self, log_file_name):
         """
