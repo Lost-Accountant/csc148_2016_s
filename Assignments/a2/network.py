@@ -245,22 +245,67 @@ class Network(object):
 
     def mentor(self, member_name):
         """
-        Return the mentor name of member with name member_name.
+        Return the mentor name of member with name member_name. Sponsor is the
+        parent of the first child, or the previous member.
 
-        TODO: Complete this part
+        @param member_name: the member name we are interested in
+        @type member_name: str
+        @param self: Network self
+        @type self: Network
+        @rtype: str
+
+        >>> n1 = Network("John", 100)
+        >>> n2 = Network("Smith", 150, [n1])
+        >>> print(n2.mentor('John'))
+        Smith
+        >>> n3 = Network("Alex", 170)
+        >>> n2 = Network("Smith", 150, [n1, n3])
+        >>> print(n2.mentor("Alex"))
+        John
         """
-
-        #TODO: Complete this part
-
+        # get parent if list[0], else get list[n-1]
+        # locate member interested and its parent
+        parent, current = None, self
+        while current.name != member_name:
+            # locate the target
+            for child in current.child.copy():
+                if child.__contains__(member_name):
+                    parent = current
+                    current = child
+        # after locating the target
+        # is the child at list[0]?
+        if parent.child[0] is child:
+            return parent.name
+        else:
+            # previous member
+            return parent.child[parent.child.index(child) - 1].name
 
     def assets(self, member_name):
-        """Return the assets of member with name member_name.
-
-        TODO: Complete this part
         """
+        Return the assets of member with name member_name.
 
-        #TODO: Complete this part
+        @param self: Network self
+        @type self: Network
+        @param member_name: the member name we are interested in
+        @type member_name: str
+        @rtype: int
 
+        >>> n1 = Network("John", 100)
+        >>> n3 = Network("Alex", 170)
+        >>> n2 = Network("Smith", 150, [n1, n3])
+        >>> n2.assets('John')
+        100
+        >>> n2.assets('Smith')
+        150
+        """
+        # locate child
+        current = self
+        while current.name != member_name:
+            for child in current.child.copy():
+                if child.__contains__(member_name):
+                    current = child
+        # after locating
+        return current.asset
 
     def children(self, member_name):
         """Return the name of all children of member with name member_name.
