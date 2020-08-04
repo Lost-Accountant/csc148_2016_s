@@ -274,11 +274,11 @@ class Network(object):
                     current = child
         # after locating the target
         # is the child at list[0]?
-        if parent.child[0] is child:
+        if parent.child[0] is current:
             return parent.name
         else:
             # previous member
-            return parent.child[parent.child.index(child) - 1].name
+            return parent.child[parent.child.index(current) - 1].name
 
     def assets(self, member_name):
         """
@@ -308,13 +308,34 @@ class Network(object):
         return current.asset
 
     def children(self, member_name):
-        """Return the name of all children of member with name member_name.
-
-        TODO: Complete this part
         """
+        Return the name of all children of member with name member_name.
+        Assuming it is only for first/direct child, not including any children
+        after first layer.
 
-        #TODO: Complete this part
+        @param self: Network self
+        @type self: Network
+        @param member_name: the member name we are interested in
+        @type member_name: str
+        @rtype: list[str]
 
+        >>> n1 = Network("John", 100)
+        >>> n3 = Network("Alex", 170)
+        >>> n2 = Network("Smith", 150, [n1, n3])
+        >>> n2.children("Smith")
+        ['John', 'Alex']
+        """
+        # locate member
+        current = self
+        while current.name != member_name:
+            for child in current.child.copy():
+                if child.__contains__(member_name):
+                    current = child
+        # find the member, get its children names
+        list_child = []
+        for child in current.child:
+            list_child.append(child.name)
+        return list_child
 
     def best_arrest_assets(self, maximum_arrest):
         """Search for the amount of seized assets in the best arrest scenario
@@ -341,13 +362,13 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
     # A sample example of how to use a network object
-    #network = Network()
-    #network.load_log("topology1.txt")
-    #member_name = "Sophia"
-    #print(member_name + "'s sponsor is " + network.sponsor(member_name))
-    #print(member_name + "'s mentor is " + network.mentor(member_name))
-    #print(member_name + "'s asset is " + str(network.assets(member_name)))
-    #print(member_name + "'s childrens are " + str(network.children(member_name)))
+    network = Network()
+    network.load_log("topology1.txt")
+    member_name = "Sophia"
+    print(member_name + "'s sponsor is " + network.sponsor(member_name))
+    print(member_name + "'s mentor is " + network.mentor(member_name))
+    print(member_name + "'s asset is " + str(network.assets(member_name)))
+    print(member_name + "'s childrens are " + str(network.children(member_name)))
     #maximum_arrest = 4
     #print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
     #      + " arrests will seize " + str(network.best_arrest_assets(maximum_arrest)))
