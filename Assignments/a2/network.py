@@ -213,16 +213,39 @@ class Network(object):
         open_file.close()
 
     def sponsor(self, member_name):
-        """Return the sponsor name of member with name member_name.
-
-        TODO: Complete this part
         """
+        Return the sponsor name of member with name member_name,
+        and None when member_name is boss.
 
-        #TODO: Complete this part
+        Basically returning the parents
 
+        @param self: Network self
+        @type self: Network
+        @param member_name: the name of the member known
+        @type member_name: str
+        @rtype: str or None
+
+        >>> n1 = Network("John", 100)
+        >>> print(n1.sponsor('John'))
+        None
+        >>> n2 = Network("Smith", 150, [n1])
+        >>> print(n2.sponsor('John'))
+        Smith
+        """
+        parent, current = None, self
+        if self.name == member_name and parent is None:
+            return None
+        else:
+            while current.name != member_name:
+                for child in current.child.copy():
+                    if child.__contains__(member_name):
+                        parent = current
+                        current = child
+            return parent.name
 
     def mentor(self, member_name):
-        """Return the mentor name of member with name member_name.
+        """
+        Return the mentor name of member with name member_name.
 
         TODO: Complete this part
         """
@@ -270,16 +293,18 @@ class Network(object):
 
 
 if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
     # A sample example of how to use a network object
-    network = Network()
-    network.load_log("topology1.txt")
-    member_name = "Sophia"
-    print(member_name + "'s sponsor is " + network.sponsor(member_name))
-    print(member_name + "'s mentor is " + network.mentor(member_name))
-    print(member_name + "'s asset is " + str(network.assets(member_name)))
-    print(member_name + "'s childrens are " + str(network.children(member_name)))
-    maximum_arrest = 4
-    print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
-          + " arrests will seize " + str(network.best_arrest_assets(maximum_arrest)))
-    print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
-          + " arrests is: " + str(network.best_arrest_order(maximum_arrest)))
+    #network = Network()
+    #network.load_log("topology1.txt")
+    #member_name = "Sophia"
+    #print(member_name + "'s sponsor is " + network.sponsor(member_name))
+    #print(member_name + "'s mentor is " + network.mentor(member_name))
+    #print(member_name + "'s asset is " + str(network.assets(member_name)))
+    #print(member_name + "'s childrens are " + str(network.children(member_name)))
+    #maximum_arrest = 4
+    #print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
+    #      + " arrests will seize " + str(network.best_arrest_assets(maximum_arrest)))
+    #print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
+    #      + " arrests is: " + str(network.best_arrest_order(maximum_arrest)))
