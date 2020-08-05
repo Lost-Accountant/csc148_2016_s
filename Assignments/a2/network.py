@@ -447,7 +447,7 @@ def gather_lists(list_):
             new_list.append(element)
     return new_list
 
-def best_path(network, member_name):
+def best_path_tiral(network, member_name):
     """
     Return the maximized assets from locating other members with a member name.
     Only to arrest one more member. (Max arrest is 2)
@@ -456,17 +456,7 @@ def best_path(network, member_name):
     @type self: Network
     @param member_name: the member name we are interested in
     @type member_name: str
-
-    >>> n1 = Network()
-    >>> n1.load_log("topology1.txt")
-    >>> best_path(n1, "William")
-    92
-    >>> best_path(n1, "Jacob")
-    92
-    >>> best_path(n1, "Emma")
-    52
-    >>> best_path(n1, "Liam")
-    70
+    @rtype: int
     """
     # get sponsor asset
     if network.sponsor(member_name) is not None:
@@ -495,6 +485,48 @@ def best_path(network, member_name):
     #### STEPS == 0: CURRENT ASSET
     #### STEPS == 1: ABOVE
     #### STEPS == 2: RESURSION DOWN TO 1: CURRENT + BEST(SPONSOR, MENTOR, KID; STEP = 1)
+
+def best_path(network, member_name, steps):
+    """
+    Return the maximized assets from locating other members with a member name,
+    given steps left.
+
+    @param self: Network self
+    @type self: Network
+    @param member_name: the member name we are interested in
+    @type member_name: str
+    @param steps: steps left to explore
+    @type steps: int
+    @rtype: int
+
+    >>> n1 = Network()
+    >>> n1.load_log("topology1.txt")
+    >>> best_path(n1, "Sophia", 1)
+    5
+    >>> best_path(n1, "William", 2)
+    92
+    >>> best_path(n1, "William", 3)
+    112
+    """
+    # base case, 1 step left
+    if steps == 1:
+        return network.assets(member_name)
+    else:
+        # sponsor
+        sponsor_asset = best_path(network,
+                                  network.sponsor(member_name),
+                                  steps -1)
+        # mentor
+        mentor_asset = best_path(network,
+                                network.mentor(member_name),
+                                steps -1)
+        # child
+        child_asset = max([best_path(network, each, steps -1)
+                           for each in network.children(member_name)])
+        return network.assets(member_name) + max([sponsor_asset,
+                                                  mentor_asset,
+                                                  child_asset])
+        ### current problem: goes back to william at step 3
 
 if __name__ == "__main__":
     import doctest
