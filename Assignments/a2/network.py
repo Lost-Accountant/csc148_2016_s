@@ -338,13 +338,23 @@ class Network(object):
         return list_child
 
     def best_arrest_assets(self, maximum_arrest):
-        """Search for the amount of seized assets in the best arrest scenario
+        """
+        Search for the amount of seized assets in the best arrest scenario
         that maximizes the seized assets. Consider all members as target zero.
 
-        TODO: Complete this part
+        >>> n1 = Network()
+        >>> n1.load_log("topology1.txt")
+        >>> n1.best_arrest_assets(4)
+        162
+        >>> n1.best_arrest_assets(2)
+        92
+        >>> n1.best_arrest_assets(1)
+        60
         """
-
-        #TODO: Complete this part
+        # Base case 1: max 1 arrest
+        if maximum_arrest == 1:
+            return max_asset(self)
+        # Base case 2: max 2 arrests
 
     def best_arrest_order(self, maximum_arrest):
         """Search for list of member names in the best arrest scenario that
@@ -357,6 +367,28 @@ class Network(object):
 
         #TODO: Complete this part
 
+def max_asset(network):
+    """
+    Return the maximum asset in the network
+
+    @param network: the network interested in
+    @type network: Network
+    @rtype: int
+
+    >>> n1 = Network()
+    >>> n1.load_log("topology1.txt")
+    >>> max_asset(n1)
+    60
+    >>> n2 = Network("John", 100)
+    >>> max_asset(n2)
+    100
+    """
+    # base case
+    if len(network.child) == 0:
+        return network.asset
+    # general case
+    else:
+        return max([network.asset] + [max_asset(x) for x in network.child])
 
 if __name__ == "__main__":
     import doctest
