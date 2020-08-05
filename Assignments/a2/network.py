@@ -276,12 +276,14 @@ class Network(object):
         # after locating the target
         # is the child at list[0]?
 
-        ####TO FIX: NEVER WENT THROUGH WHILE LOOP
-        if parent.child[0] is current:
-            return parent.name
+        if parent is not None:
+            if parent.child[0] is current:
+                return parent.name
+            else:
+                # previous member
+                return parent.child[parent.child.index(current) - 1].name
         else:
-            # previous member
-            return parent.child[parent.child.index(current) - 1].name
+            return None
 
     def assets(self, member_name):
         """
@@ -353,6 +355,8 @@ class Network(object):
         92
         >>> n1.best_arrest_assets(1)
         60
+        >>> n1.best_arrest_assets(3)
+        112
         """
         members = list_all(self)
         if maximum_arrest == 1:
@@ -360,33 +364,14 @@ class Network(object):
         elif maximum_arrest == 2:
             top = 0
             for each in members:
-                # sponsor, None for boss
-                if self.sponsor(each) is not None:
-                    sponsor_asset = self.assets(self.sponsor(each))
-                else:
-                    sponsor_asset = 0
-
-                # mentor, might be the same as sponsor, might not exist for boss
-                if self.mentor(each) is not None:
-                    mentor_asset = self.assets(self.mentor(each))
-                else: # PROBLEM HERE ABOUT NONETYPE
-                    mentor_asset = 0
-
-                # richest child, might not have kids
-                if len(self.children(each)) != 0:
-                    child_asset = max([self.assets(each_kid)
-                                   for each_kid in self.children(each)])
-                else:
-                    child_asset = 0
-
-                record = self.assets(each) + max([sponsor_asset,
-                                                     mentor_asset,
-                                                     child_asset])
+                record = best_path(self, each)
                 if top < record:
                     top = record
             return top
             #### TO IMPROVE: best_path(self, name) so that can call
             #### it recursively in larger number
+        else:
+            pass
 
     def best_arrest_order(self, maximum_arrest):
         """Search for list of member names in the best arrest scenario that
@@ -460,6 +445,50 @@ def gather_lists(list_):
         for element in sub:
             new_list.append(element)
     return new_list
+
+def best_path(network, member_name):
+    """
+    Return the maximized assets from locating other members with a member name.
+    Only to arrest one more member. (Max arrest is 2)
+
+    @param self: Network self
+    @type self: Network
+    @param member_name: the member name we are interested in
+    @type member_name: str
+
+    >>> n1 = Network()
+    >>> n1.load_log("topology1.txt")
+    >>> best_path(n1, "William")
+    92
+    >>> best_path(n1, "Jacob")
+    92
+    >>> best_path(n1, "Emma")
+    52
+    >>> best_path(n1, "Liam")
+    70
+    """
+    # get sponsor asset
+    if network.sponsor(member_name) is not None:
+        sponsor_asset = network.assets(network.sponsor(member_name))
+    else:
+        sponsor_asset = 0
+
+    # get mentor
+    if network.sponsor(member_name) is not None:
+        mentor_asset = network.assets(network.mentor(member_name))
+    else:
+        mentor_asset = 0
+
+    # get richest child, might not exist
+    if len(network.children(member_name)) != 0:
+        child_asset = max([network.assets(each)
+                           for each in network.children(member_name)])
+    else:
+        child_asset = 0
+
+    return network.assets(member_name) + max([sponsor_asset,
+                                              mentor_asset,
+                                              child_asset])
 
 if __name__ == "__main__":
     import doctest
