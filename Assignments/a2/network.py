@@ -46,11 +46,11 @@ class Network(object):
         Network('Smith', $150, [Network('John', $100)])
         """
         return ('Network({}, ${}, {})'.format(repr(self.name),
-                                                repr(self.asset),
-                                                repr(self.child))
+                                              repr(self.asset),
+                                              repr(self.child))
                 if self.child
                 else 'Network({}, ${})'.format(repr(self.name),
-                                                repr(self.asset)))
+                                               repr(self.asset)))
 
     def __contains__(self, name):
         """
@@ -72,7 +72,8 @@ class Network(object):
         if len(self.child) == 0:
             return self.name == name
         else:
-            return self.name == name or any([name in each for each in self.child])
+            return self.name == name or \
+                   any([name in each for each in self.child])
     # TODO: Complete this part
 
     def bfs_contains(self, name):
@@ -192,7 +193,7 @@ class Network(object):
         open_file = open(log_file_name, 'r')
         for line in open_file:
             info = line.rstrip('\n').split('#')
-            if len(info) == 2: # boss slot, no parent
+            if len(info) == 2:  # boss slot, no parent
                 self.name = info[0]
                 self.asset = int(info[1])
             else:
@@ -274,6 +275,8 @@ class Network(object):
                     current = child
         # after locating the target
         # is the child at list[0]?
+
+        ####TO FIX: NEVER WENT THROUGH WHILE LOOP
         if parent.child[0] is current:
             return parent.name
         else:
@@ -351,10 +354,39 @@ class Network(object):
         >>> n1.best_arrest_assets(1)
         60
         """
-        # Base case 1: max 1 arrest
+        members = list_all(self)
         if maximum_arrest == 1:
-            return max_asset(self)
-        # Base case 2: max 2 arrests
+            return max([self.assets(each) for each in members])
+        elif maximum_arrest == 2:
+            top = 0
+            for each in members:
+                # sponsor, None for boss
+                if self.sponsor(each) is not None:
+                    sponsor_asset = self.assets(self.sponsor(each))
+                else:
+                    sponsor_asset = 0
+
+                # mentor, might be the same as sponsor, might not exist for boss
+                if self.mentor(each) is not None:
+                    mentor_asset = self.assets(self.mentor(each))
+                else: # PROBLEM HERE ABOUT NONETYPE
+                    mentor_asset = 0
+
+                # richest child, might not have kids
+                if len(self.children(each)) != 0:
+                    child_asset = max([self.assets(each_kid)
+                                   for each_kid in self.children(each)])
+                else:
+                    child_asset = 0
+
+                record = self.assets(each) + max([sponsor_asset,
+                                                     mentor_asset,
+                                                     child_asset])
+                if top < record:
+                    top = record
+            return top
+            #### TO IMPROVE: best_path(self, name) so that can call
+            #### it recursively in larger number
 
     def best_arrest_order(self, maximum_arrest):
         """Search for list of member names in the best arrest scenario that
@@ -369,7 +401,7 @@ class Network(object):
 
 def max_asset(network):
     """
-    Return the maximum asset in the network
+    Return the maximum asset in the network.
 
     @param network: the network interested in
     @type network: Network
@@ -389,6 +421,45 @@ def max_asset(network):
     # general case
     else:
         return max([network.asset] + [max_asset(x) for x in network.child])
+
+def list_all(network):
+    """
+    List all names in the network
+
+    @param network: the network interested in
+    @type network: Network
+    @rtype: list[str]
+
+    >>> n1 = Network("John", 100)
+    >>> n3 = Network("Alex", 170)
+    >>> n2 = Network("Smith", 150, [n1, n3])
+    >>> list_all(n2)
+    ['John', 'Alex', 'Smith']
+    """
+    if len(network.child) == 0:
+        return [network.name]
+    else:
+        return gather_lists([list_all(x) for x in network.child]) \
+               + [network.name]
+
+def gather_lists(list_):
+    """
+    Return the concatenation of the sublists of list_.
+
+    :param list_: list of sublists
+    :type list_: list[list]
+    :rtype: list
+
+    >>> list_ = [[1, 2], [3, 4]]
+    >>> gather_lists(list_)
+    [1, 2, 3, 4]
+    """
+    # this is a case where list comprehension gets a bit unreadable
+    new_list = []
+    for sub in list_:
+        for element in sub:
+            new_list.append(element)
+    return new_list
 
 if __name__ == "__main__":
     import doctest
