@@ -359,10 +359,10 @@ class Network(object):
         112
         """
         members = list_all(self)
+        top = 0
         if maximum_arrest == 1:
             return max([self.assets(each) for each in members])
         elif maximum_arrest == 2:
-            top = 0
             for each in members:
                 record = best_path(self, each)
                 if top < record:
@@ -427,6 +427,7 @@ def list_all(network):
         return gather_lists([list_all(x) for x in network.child]) \
                + [network.name]
 
+
 def gather_lists(list_):
     """
     Return the concatenation of the sublists of list_.
@@ -489,6 +490,11 @@ def best_path(network, member_name):
     return network.assets(member_name) + max([sponsor_asset,
                                               mentor_asset,
                                               child_asset])
+    #### NEED TO MAKE THIS RECURSIVE, REPLACE MAX ASSET
+    #### BEST_PATH(NETWORK, NAME, STEPS LEFT)
+    #### STEPS == 0: CURRENT ASSET
+    #### STEPS == 1: ABOVE
+    #### STEPS == 2: RESURSION DOWN TO 1: CURRENT + BEST(SPONSOR, MENTOR, KID; STEP = 1)
 
 if __name__ == "__main__":
     import doctest
