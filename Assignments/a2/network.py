@@ -74,7 +74,27 @@ class Network(object):
         else:
             return self.name == name or \
                    any([name in each for each in self.child])
-    # TODO: Complete this part
+
+    def jump_to(self, name):
+        """
+        Jump to the node with given name
+
+        @param name: name we want to jump to
+        @type name: str
+        @rtype: Network
+        >>> n1 = Network("John", 100)
+        >>> n2 = Network("Smith", 150, [n1])
+        >>> current = n2.jump_to("John")
+        >>> current is n1
+        True
+        """
+        if self.__contains__(name):
+            current = self
+            while current.name != name:
+                for child in current.child.copy():
+                    if child.__contains__(name):
+                        current = child
+            return current
 
     def bfs_contains(self, name):
         """
@@ -304,11 +324,7 @@ class Network(object):
         150
         """
         # locate child
-        current = self
-        while current.name != member_name:
-            for child in current.child.copy():
-                if child.__contains__(member_name):
-                    current = child
+        current = self.jump_to(member_name)
         # after locating
         return current.asset
 
@@ -384,28 +400,6 @@ class Network(object):
 
         #TODO: Complete this part
 
-def max_asset(network):
-    """
-    Return the maximum asset in the network.
-
-    @param network: the network interested in
-    @type network: Network
-    @rtype: int
-
-    >>> n1 = Network()
-    >>> n1.load_log("topology1.txt")
-    >>> max_asset(n1)
-    60
-    >>> n2 = Network("John", 100)
-    >>> max_asset(n2)
-    100
-    """
-    # base case
-    if len(network.child) == 0:
-        return network.asset
-    # general case
-    else:
-        return max([network.asset] + [max_asset(x) for x in network.child])
 
 def list_all(network):
     """
@@ -447,45 +441,6 @@ def gather_lists(list_):
             new_list.append(element)
     return new_list
 
-def best_path_tiral(network, member_name):
-    """
-    Return the maximized assets from locating other members with a member name.
-    Only to arrest one more member. (Max arrest is 2)
-
-    @param self: Network self
-    @type self: Network
-    @param member_name: the member name we are interested in
-    @type member_name: str
-    @rtype: int
-    """
-    # get sponsor asset
-    if network.sponsor(member_name) is not None:
-        sponsor_asset = network.assets(network.sponsor(member_name))
-    else:
-        sponsor_asset = 0
-
-    # get mentor
-    if network.sponsor(member_name) is not None:
-        mentor_asset = network.assets(network.mentor(member_name))
-    else:
-        mentor_asset = 0
-
-    # get richest child, might not exist
-    if len(network.children(member_name)) != 0:
-        child_asset = max([network.assets(each)
-                           for each in network.children(member_name)])
-    else:
-        child_asset = 0
-
-    return network.assets(member_name) + max([sponsor_asset,
-                                              mentor_asset,
-                                              child_asset])
-    #### NEED TO MAKE THIS RECURSIVE, REPLACE MAX ASSET
-    #### BEST_PATH(NETWORK, NAME, STEPS LEFT)
-    #### STEPS == 0: CURRENT ASSET
-    #### STEPS == 1: ABOVE
-    #### STEPS == 2: RESURSION DOWN TO 1: CURRENT + BEST(SPONSOR, MENTOR, KID; STEP = 1)
-
 def best_path(network, member_name, steps):
     """
     Return the maximized assets from locating other members with a member name,
@@ -503,14 +458,23 @@ def best_path(network, member_name, steps):
     >>> n1.load_log("topology1.txt")
     >>> best_path(n1, "Sophia", 1)
     5
+    >>> n1.load_log("topology1.txt")
     >>> best_path(n1, "William", 2)
     92
+    >>> n1.load_log("topology1.txt")
     >>> best_path(n1, "William", 3)
     112
     """
     # base case, 1 step left
     if steps == 1:
-        return network.assets(member_name)
+        # if arrested, asset becomes zero, to avoid recursion going back
+        current = network.jump_to(member_name)
+        if network.assets(member_name) == 0:
+            seized = 0
+        else:
+            seized = network.assets(member_name)
+        current.asset = 0
+        return seized
     else:
         # sponsor
         sponsor_asset = best_path(network,
@@ -521,11 +485,19 @@ def best_path(network, member_name, steps):
                                 network.mentor(member_name),
                                 steps -1)
         # child
-        child_asset = max([best_path(network, each, steps -1)
-                           for each in network.children(member_name)])
-        return network.assets(member_name) + max([sponsor_asset,
+        if len(network.children(member_name)) != 0:
+            child_asset = max([best_path(network, each, steps -1)
+                               for each in network.children(member_name)])
+        else:
+            child_asset = 0
+        #### NEED TO FIND MAX ASSET FROM 3 BRANCH WITHOUT GOING INTO GENERAL CASE
+        #### OTHERWISE DESTROY PATH NOT WALKED.
+        current = network.jump_to(member_name)
+        seized = network.assets(member_name) + max([sponsor_asset,
                                                   mentor_asset,
                                                   child_asset])
+        #current.asset = None
+        return seized
         ### current problem: goes back to william at step 3
 
 if __name__ == "__main__":
