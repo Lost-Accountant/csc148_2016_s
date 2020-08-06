@@ -458,12 +458,14 @@ def best_path(network, member_name, steps):
     >>> n1.load_log("topology1.txt")
     >>> best_path(n1, "Sophia", 1)
     5
-    >>> n1.load_log("topology1.txt")
-    >>> best_path(n1, "William", 2)
+    >>> n2 = Network()
+    >>> n2.load_log("topology1.txt")
+    >>> best_path(n2, "William", 2)
     92
-    >>> n1.load_log("topology1.txt")
-    >>> best_path(n1, "William", 3)
-    112
+    >>> n3 = Network()
+    >>> n3.load_log("topology1.txt")
+    >>> best_path(n3, "Sophia", 3)
+    57
     """
     # base case, 1 step left
     if steps == 1:
@@ -490,15 +492,14 @@ def best_path(network, member_name, steps):
                                for each in network.children(member_name)])
         else:
             child_asset = 0
-        #### NEED TO FIND MAX ASSET FROM 3 BRANCH WITHOUT GOING INTO GENERAL CASE
-        #### OTHERWISE DESTROY PATH NOT WALKED.
+
         current = network.jump_to(member_name)
         seized = network.assets(member_name) + max([sponsor_asset,
                                                   mentor_asset,
                                                   child_asset])
-        #current.asset = None
+        current.asset = 0
         return seized
-        ### current problem: goes back to william at step 3
+
 
 if __name__ == "__main__":
     import doctest
