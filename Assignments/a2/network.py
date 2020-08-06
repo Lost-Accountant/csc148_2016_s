@@ -96,6 +96,33 @@ class Network(object):
                         current = child
             return current
 
+    def richest_child(self, member_name):
+        """
+        Return the name of the richest child under a member name, if no child,
+        return None
+
+        @param member_name: the member name of the parent
+        @type member_name: str
+        @rtype: str
+
+        >>> n1 = Network()
+        >>> n1.load_log("topology1.txt")
+        >>> n1.richest_child("Jacob")
+        'William'
+        >>> n1.richest_child("Emma")
+        'Mason'
+        >>> print(n1.richest_child("Sophia"))
+        None
+        """
+        child_list = self.children(member_name)
+        record = 0
+        holder = None
+        for each in child_list:
+            if self.assets(each) > record:
+                record = self.assets(each)
+                holder = each
+        return holder
+
     def bfs_contains(self, name):
         """
         Return whether Network self contains name with Breadth-first search,
@@ -372,22 +399,16 @@ class Network(object):
         >>> n1.best_arrest_assets(1)
         60
         >>> n1.best_arrest_assets(3)
-        112
+        124
         """
         members = list_all(self)
         top = 0
-        if maximum_arrest == 1:
-            return max([self.assets(each) for each in members])
-        elif maximum_arrest == 2:
-            for each in members:
-                record = best_path(self, each)
-                if top < record:
-                    top = record
-            return top
-            #### TO IMPROVE: best_path(self, name) so that can call
-            #### it recursively in larger number
-        else:
-            pass
+        for each in members:
+            path = best_path_order(self, each, maximum_arrest)
+            seized = self.sum_assets(path)
+            if top < seized:
+                top = seized
+        return top
 
     def best_arrest_order(self, maximum_arrest):
         """
@@ -396,11 +417,52 @@ class Network(object):
         and the order in the list represents the order that members are
         arrested.
 
-        TODO: Complete this part
+        >>> n1 = Network()
+        >>> n1.load_log("topology1.txt")
+        >>> best_four = n1.best_arrest_order(4)
+        >>> best_four.sort()
+        >>> best_four == ['Alexander', 'Jacob', 'James', 'William']
+        True
+        >>> best_two = n1.best_arrest_order(2)
+        >>> best_two.sort()
+        >>> best_two == ["Jacob", "William"]
+        True
+        >>> n1.best_arrest_order(1)
+        ['Alexander']
+        >>> best_three = n1.best_arrest_order(3)
+        >>> best_three.sort()
+        >>> best_three == ['Emma', 'Jacob', 'William']
+        True
         """
+        members = list_all(self)
+        top = 0
+        best_path = []
 
-        #TODO: Complete this part
+        for each in members:
+            path = best_path_order(self, each, maximum_arrest)
+            seized = self.sum_assets(path)
+            if top < seized:
+                top = seized
+                best_path = path
+        return best_path
 
+    def sum_assets(self, name_list):
+        """
+        Return the sum of assets given a list of names in the Network.
+
+        @param name_list: a list of memebr names
+        @type name_list: list[str]
+        @rtype: int
+
+        >>> n1 = Network()
+        >>> n1.load_log("topology1.txt")
+        >>> n1.sum_assets(["Liam", "Alexander", "Olivia"])
+        88
+        """
+        sum = 0
+        for item in name_list:
+            sum += self.assets(item)
+        return sum
 
 def list_all(network):
     """
@@ -442,65 +504,6 @@ def gather_lists(list_):
             new_list.append(element)
     return new_list
 
-def best_path(network, member_name, steps):
-    """
-    Return the maximized assets from locating other members with a member name,
-    given steps left.
-
-    @param self: Network self
-    @type self: Network
-    @param member_name: the member name we are interested in
-    @type member_name: str
-    @param steps: steps left to explore
-    @type steps: int
-    @rtype: int
-
-    >>> n1 = Network()
-    >>> n1.load_log("topology1.txt")
-    >>> best_path(n1, "Sophia", 1)
-    5
-    >>> n2 = Network()
-    >>> n2.load_log("topology1.txt")
-    >>> best_path(n2, "William", 2)
-    92
-    >>> n3 = Network()
-    >>> n3.load_log("topology1.txt")
-    >>> best_path(n3, "William", 3)
-    124
-    """
-    # base case, 1 step left
-    if steps == 1:
-        # if arrested, asset becomes zero, to avoid recursion going back
-        #current = network.jump_to(member_name)
-        # needs to change this structure
-        # this should be enough
-        seized = network.assets(member_name)
-        #current.asset = 0
-        return seized
-    else:
-        # sponsor
-        sponsor_asset = best_path(network,
-                                  network.sponsor(member_name),
-                                  steps -1)
-        # mentor
-        mentor_asset = best_path(network,
-                                network.mentor(member_name),
-                                steps -1)
-        # child
-        if len(network.children(member_name)) != 0:
-            child_asset = max([best_path(network, each, steps -1)
-                               for each in network.children(member_name)])
-        else:
-            child_asset = 0
-
-        current = network.jump_to(member_name)
-        # as Jacob, set William to be zero before base case
-        seized = network.assets(member_name) + max([sponsor_asset,
-                                                  mentor_asset,
-                                                  child_asset])
-        current.asset = 0
-        return seized
-
 def best_path_order(network, member_name, steps):
     """
     Return the best path in the network from a given member_name and number of
@@ -516,47 +519,50 @@ def best_path_order(network, member_name, steps):
 
     >>> n1 = Network()
     >>> n1.load_log("topology1.txt")
-    >>> best_path_order(n1, "Sophia", 3)
-    ['', '', '']
+    >>> best_path_order(n1, "Alexander", 3)
+    ['Alexander', 'James', 'William']
+    >>> best_path_order(n1, "Mason", 4)
+    ['Mason', 'Emma', 'Liam', 'Jacob']
     """
-    # maybe better to do this first
-    order = []
-    # base case, 1 step left, take itself
+    if member_name is None:
+        return []
+
+    path = []
+    # base case
+    # 1 steps left, return its name
     if steps == 1:
-        order.append(member_name)
-        return order
-    # general case, recursively select paths based on best_path(n. m, s)
-    # select paths based on max assets while tracking the relationships
+        path.append(member_name)
+        return path
+
+    # general case
     else:
-        pool = {}
-        # sponsor
-        pool[network.sponsor(member_name)] = best_path(network,
-                                                       network.sponsor(member_name),
-                                                       steps -1)
-        # mentor
-        pool[network.sponsor(member_name)] = best_path(network,
-                                                       network.mentor(member_name),
-                                                       steps -1)
+        # current asset is zero so that future recursion doesn't come back
+        current = network.jump_to(member_name)
+        temp = current.asset
+        current.asset = 0
 
-        # child
-        if len(network.children(member_name)) != 0:
-            child_record, holder = 0, ''
-            for each in network.children(member_name):
-                child_asset = best_path(network, each, steps -1)
-                if child_asset > child_record:
-                    child_record, holder = child_asset, each
-        else:
-            child_record, holder = 0, 'na'
-        pool[holder] = child_record
+        sponsor, mentor, child = network.sponsor(member_name), \
+                                 network.mentor(member_name), \
+                                 network.richest_child(member_name)
+        # selection process
+        sponsor_path = best_path_order(network, sponsor, steps - 1)
+        mentor_path = best_path_order(network, mentor, steps - 1)
+        child_path = best_path_order(network, child, steps - 1)
 
-        # select which path to go
-        order.append(max(pool, key=pool.get))
+        pool = {repr(sponsor_path): network.sum_assets(sponsor_path),
+                repr(mentor_path): network.sum_assets(mentor_path),
+                repr(child_path): network.sum_assets(child_path)}
+        ## filter out path with current member name
+        for l in pool.keys():
+            if member_name in l:
+                pool[l] = 0
+        ## select best path to return
+        path = [member_name] + eval(max(pool, key=pool.get))
 
-        # TODO: check path that has gone through
-        # currently only grabbed the closest one
-        # needs to create recursion for path beyond
-        # or maybe 2 level check is enough? (probably not)
-        return order
+        # put the value back after selection process
+        current.asset = temp
+
+        return path
 
 if __name__ == "__main__":
     import doctest
@@ -569,8 +575,8 @@ if __name__ == "__main__":
     print(member_name + "'s mentor is " + network.mentor(member_name))
     print(member_name + "'s asset is " + str(network.assets(member_name)))
     print(member_name + "'s childrens are " + str(network.children(member_name)))
-    #maximum_arrest = 4
-    #print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
-    #      + " arrests will seize " + str(network.best_arrest_assets(maximum_arrest)))
-    #print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
-    #      + " arrests is: " + str(network.best_arrest_order(maximum_arrest)))
+    maximum_arrest = 4
+    print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
+          + " arrests will seize " + str(network.best_arrest_assets(maximum_arrest)))
+    print("The best arrest scenario with the maximum of " + str(maximum_arrest)\
+          + " arrests is: " + str(network.best_arrest_order(maximum_arrest)))
