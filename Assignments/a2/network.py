@@ -406,8 +406,7 @@ class Network(object):
         for each in members:
             path = best_path_order(self, each, maximum_arrest)
             seized = self.sum_assets(path)
-            if top < seized:
-                top = seized
+            top = max(top, seized)
         return top
 
     def best_arrest_order(self, maximum_arrest):
