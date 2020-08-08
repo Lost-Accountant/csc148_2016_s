@@ -273,3 +273,59 @@ def BST_delete_alt(node, data):
         else:
             parent_left_most.left = left_most.right
         return True
+
+
+def bst_del_rec(tree, data):
+    """
+    Delete data in BST rooted at node if necessary, and return new root.
+
+    Assume node is the root of a Binary Search Tree.
+
+    @param tree: a Binary Search Tree
+    @type tree: BinaryTree
+    @param data: an object to be deleted
+    @type data: object
+    @rtype: bool
+
+    >>> b = BinaryTree(5)
+    >>> b1 = bst_insert(b, 3)
+    >>> b2 = bst_insert(b1, 8)
+    >>> bst_delete(b2, 3)
+    True
+    >>> print(b2)
+        8
+    5
+    <BLANKLINE>
+    """
+    # base case 1: reach empty node
+    if tree is None:
+        return None
+
+    # general case 1: find target node at left or right
+    elif data < tree.data:
+        tree.left = bst_del_rec(tree.left, data)
+    elif data > tree.data:
+        tree.right = bst_del_rec(tree.right, data)
+
+    # base case 2: find target node
+    else:
+        # situation 1: no left child
+        if tree.left is None:
+            return tree.right
+        # situation 2: has left child
+        else:
+            # locate (right most from left child)
+            largest = findmax(tree.left)
+            # replace
+            tree.data = largest.data
+            # connect (get rid of right most from left child)
+            tree.left = bst_del_rec(tree.left, largest.data)
+            return tree
+
+def findmax(tree):
+    """
+    Return the right most node in a tree
+    @param tree: a Binary Search Tree
+    @type tree: BinaryTree
+    """
+    return tree if tree.right is None else findmax(tree.right)
