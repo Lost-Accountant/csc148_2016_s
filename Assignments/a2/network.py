@@ -45,12 +45,13 @@ class Network(object):
         >>> n2
         Network('Smith', $150, [Network('John', $100)])
         """
-        return ('Network({}, ${}, {})'.format(repr(self.name),
-                                              repr(self.asset),
-                                              repr(self.child))
-                if self.child
-                else 'Network({}, ${})'.format(repr(self.name),
-                                               repr(self.asset)))
+        if self.child:
+            return 'Network({}, ${}, {})'.format(repr(self.name),
+                                                  repr(self.asset),
+                                                  repr(self.child))
+        else:
+            return 'Network({}, ${})'.format(repr(self.name),
+                                             repr(self.asset))
 
     def __contains__(self, name):
         """
@@ -73,7 +74,7 @@ class Network(object):
             return self.name == name
         else:
             return self.name == name or \
-                   any([name in each for each in self.child])
+                   any([each.__contains__(name) for each in self.child])
 
     def jump_to(self, name):
         """
